@@ -60,11 +60,34 @@ function parseCSV(csvText: string): Row[] {
 
 export async function getRows(): Promise<Row[]> {
   const url = process.env.PUBLIC_SHEET_CSV_URL;
-  if (!url) throw new Error("Missing PUBLIC_SHEET_CSV_URL in .env.local");
+  if (!url) {
+    throw new Error("Missing PUBLIC_SHEET_CSV_URL (check .env.local and Vercel env vars).");
+  }
 
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to fetch CSV: ${res.status}`);
+  const res = await fetch(url, {
+    cache: "no-store",
+    headers: {
+      Accept: "text/csv,text/plain,*/*",
+      "User-Agent": "Mozilla/5.0",
+    },
+  });
 
-  const csv = await res.text();
-  return parseCSV(csv);
+  const text = await res.text();
+
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch CSV: ${res.status}. First 120 chars: ${text.slice(0, 120)}`
+    );
+  }
+
+  const trimmed = text.trim();
+
+  // If Google returns an HTML page, catch it immediately
+  if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
+    throw new Error(
+      `Google returned HTML instead of CSV. First 120 chars: ${trimmed.slice(0, 120)}`
+    );
+  }
+
+  return parseCSV(text);
 }
