@@ -29,17 +29,52 @@ export default function LatestSubmissionsPage() {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    fetch("/api/requests", { cache: "no-store" })
-      .then(async (r) => {
+    (async () => {
+      try {
+        setError("");
+
+        const r = await fetch("/api/requests", { cache: "no-store" });
         const text = await r.text();
+
+        let json: any;
         try {
-          const json = JSON.parse(text);
-          setRows(json);
+          json = JSON.parse(text);
         } catch {
-          setError(`API did not return JSON. First 120 chars: ${text.slice(0, 120)}`);
+          setRows([]);
+          setError(
+            `API did not return JSON. Status: ${r.status}. First 120 chars: ${text.slice(
+              0,
+              120
+            )}`
+          );
+          return;
         }
-      })
-      .catch((e) => setError(String(e?.message ?? e)));
+
+        // ✅ If API returned an error object (or anything non-array), don't crash
+        if (!Array.isArray(json)) {
+          console.error("API returned non-array:", json);
+          setRows([]);
+          setError(json?.error ?? "API did not return an array");
+          return;
+        }
+
+        // ✅ Optional: basic shape-safety (prevents undefined fields crashing UI)
+        const cleaned: Row[] = json.map((x: any) => ({
+          submitted_at: String(x?.submitted_at ?? ""),
+          discord_username: String(x?.discord_username ?? ""),
+          level_id: String(x?.level_id ?? ""),
+          difficulty: String(x?.difficulty ?? ""),
+          video_url: String(x?.video_url ?? ""),
+          involved_confirm: String(x?.involved_confirm ?? ""),
+          sent: String(x?.sent ?? ""),
+        }));
+
+        setRows(cleaned);
+      } catch (e: any) {
+        setRows([]);
+        setError(String(e?.message ?? e));
+      }
+    })();
   }, []);
 
   const sorted = useMemo(() => {
@@ -62,7 +97,6 @@ export default function LatestSubmissionsPage() {
         Total rows loaded: <b>{rows.length}</b>
       </p>
 
-      {/* Tiny debug helper (remove later) */}
       {sorted[0] && (
         <p style={{ opacity: 0.7, marginTop: 8, fontSize: 12 }}>
           Newest submission timestamp: <code>{sorted[0].submitted_at}</code>
@@ -79,15 +113,34 @@ export default function LatestSubmissionsPage() {
               style={{ border: "1px solid #333", borderRadius: 12, padding: 16 }}
             >
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div><b>ID:</b> {r.level_id}</div>
-                <div><b>User:</b> {r.discord_username}</div>
-                <div><b>Submitted:</b> {r.submitted_at}</div>
+                <div>
+                  <b>ID:</b> {r.level_id}
+                </div>
+                <div>
+                  <b>User:</b> {r.discord_username}
+                </div>
+                <div>
+                  <b>Submitted:</b> {r.submitted_at}
+                </div>
               </div>
 
-              <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div><b>Difficulty:</b> {r.difficulty || "—"}</div>
-                <div><b>Involved:</b> {r.involved_confirm || "—"}</div>
-                <div><b>Sent:</b> {r.sent || "No"}</div>
+              <div
+                style={{
+                  marginTop: 8,
+                  display: "flex",
+                  gap: 16,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div>
+                  <b>Difficulty:</b> {r.difficulty || "—"}
+                </div>
+                <div>
+                  <b>Involved:</b> {r.involved_confirm || "—"}
+                </div>
+                <div>
+                  <b>Sent:</b> {r.sent || "No"}
+                </div>
               </div>
 
               {r.video_url && (
