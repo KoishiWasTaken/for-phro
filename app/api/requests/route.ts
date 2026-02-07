@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { getRows } from "@/lib/requests";
 
 export async function GET() {
-  const rows = await getRows();
-  return NextResponse.json(rows);
+  try {
+    const rows = await getRows();
+    return NextResponse.json(rows);
+  } catch (e: any) {
+    return NextResponse.json(
+      { error: String(e?.message ?? e) },
+      { status: 500 }
+    );
+  }
 }
