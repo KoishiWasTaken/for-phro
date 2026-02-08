@@ -36,60 +36,56 @@ export default function SearchPage() {
   }, [rows, mode, query]);
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", justifyContent: "center", alignItems: "center", padding: 24 }}>
-      <div style={{ width: "min(900px, 100%)" }}>
-        <h1 style={{ fontSize: 28, fontWeight: "bold", textAlign: "center" }}>Search</h1>
+    <main style={styles.page}>
+      <div style={styles.container} className="frosted-glass-strong">
+        <h1 style={styles.title}>Search Database</h1>
 
-        <div style={{ marginTop: 18, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span>Search by:</span>
+        <div style={styles.searchForm}>
+          <label style={styles.label}>
+            <span style={styles.labelText}>Search by:</span>
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value as SearchMode)}
-              style={{
-                padding: 10,
-                borderRadius: 10,
-                border: "1px solid #333",
-                backgroundColor: "white",
-                color: "black",
-              }}
+              style={styles.select}
+              className="frosted-glass"
             >
               <option value="level_id">Level ID</option>
               <option value="discord_username">Username</option>
-          </select>
+            </select>
           </label>
 
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={mode === "level_id" ? "Type a Level ID..." : "Type a username..."}
-            style={{ padding: 10, borderRadius: 10, border: "1px solid #333", width: "min(520px, 100%)" }}
+            style={styles.input}
+            className="frosted-glass"
           />
         </div>
 
-        <div style={{ marginTop: 22, display: "grid", gap: 12 }}>
+        <div style={styles.results}>
           {query.trim() && results.length === 0 && (
-            <div style={{ opacity: 0.8, textAlign: "center" }}>No matches found.</div>
+            <div style={styles.noResults}>No matches found.</div>
           )}
 
           {results.map((r, i) => (
-            <div key={i} style={{ border: "1px solid #333", borderRadius: 12, padding: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-                <div><b>ID:</b> {r.level_id}</div>
-                <div><b>User:</b> {r.discord_username}</div>
-                <div><b>Submitted:</b> {r.submitted_at}</div>
+            <div key={i} style={styles.card} className="frosted-glass">
+              <div style={styles.cardHeader}>
+                <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
+                <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
+                <div style={styles.cardItem}><strong>Submitted:</strong> {r.submitted_at}</div>
               </div>
 
-              <div style={{ marginTop: 8, display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div><b>Difficulty:</b> {r.difficulty}</div>
-                <div><b>Involved:</b> {r.involved_confirm}</div>
-                <div><b>Sent:</b> {r.sent || "No"}</div>
+              <div style={styles.cardDetails}>
+                <div style={styles.cardItem}><strong>Difficulty:</strong> {r.difficulty}</div>
+                <div style={styles.cardItem}><strong>Involved:</strong> {r.involved_confirm}</div>
+                <div style={styles.cardItem}><strong>Sent:</strong> {r.sent || "No"}</div>
               </div>
 
               {r.video_url && (
-                <div style={{ marginTop: 10 }}>
-                  <a href={r.video_url} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>
-                    Video link
+                <div style={styles.videoLink}>
+                  <a href={r.video_url} target="_blank" rel="noreferrer" style={styles.link}>
+                    View Video →
                   </a>
                 </div>
               )}
@@ -97,10 +93,119 @@ export default function SearchPage() {
           ))}
         </div>
 
-        <div style={{ marginTop: 18, textAlign: "center" }}>
-          <a href="/" style={{ textDecoration: "underline", opacity: 0.85 }}>← Back</a>
+        <div style={styles.backLink}>
+          <a href="/" style={styles.link}>← Back to Home</a>
         </div>
       </div>
     </main>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  container: {
+    width: "min(900px, 100%)",
+    padding: "40px 32px",
+    borderRadius: 24,
+  },
+  title: {
+    fontSize: "clamp(28px, 4vw, 36px)",
+    fontWeight: 700,
+    textAlign: "center",
+    margin: 0,
+    marginBottom: 32,
+    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  },
+  searchForm: {
+    display: "flex",
+    gap: 12,
+    justifyContent: "center",
+    flexWrap: "wrap",
+    marginBottom: 28,
+  },
+  label: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+  },
+  labelText: {
+    fontWeight: 600,
+    fontSize: 14,
+    color: "var(--foreground)",
+  },
+  select: {
+    padding: "12px 16px",
+    borderRadius: 12,
+    border: "none",
+    color: "var(--foreground)",
+    fontSize: 14,
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "all 200ms ease",
+  },
+  input: {
+    padding: "12px 16px",
+    borderRadius: 12,
+    border: "none",
+    width: "min(400px, 100%)",
+    fontSize: 14,
+    color: "var(--foreground)",
+    transition: "all 200ms ease",
+  },
+  results: {
+    display: "grid",
+    gap: 16,
+  },
+  noResults: {
+    opacity: 0.7,
+    textAlign: "center",
+    padding: 32,
+    color: "var(--foreground)",
+  },
+  card: {
+    borderRadius: 16,
+    padding: 20,
+    transition: "all 200ms ease",
+  },
+  cardHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 16,
+    flexWrap: "wrap",
+    marginBottom: 12,
+  },
+  cardDetails: {
+    display: "flex",
+    gap: 20,
+    flexWrap: "wrap",
+  },
+  cardItem: {
+    fontSize: 14,
+    color: "var(--foreground)",
+  },
+  videoLink: {
+    marginTop: 14,
+    paddingTop: 14,
+    borderTop: "1px solid var(--glass-border)",
+  },
+  link: {
+    color: "var(--accent)",
+    textDecoration: "none",
+    fontWeight: 600,
+    fontSize: 14,
+    transition: "opacity 200ms ease",
+  },
+  backLink: {
+    marginTop: 24,
+    textAlign: "center",
+  },
+};

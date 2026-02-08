@@ -13,9 +13,8 @@ type Row = {
 };
 
 function normalizeDate(s: string) {
-  // Handles "M/D/YYYY HH:MM:SS"
   const m = s.match(
-    /^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}:\d{2}:\d{2})$/
+    /^(d{1,2})/(d{1,2})/(d{4})s+(d{1,2}:d{2}:d{2})$/
   );
   if (!m) return 0;
   const [_, mm, dd, yyyy, time] = m;
@@ -50,7 +49,6 @@ export default function LatestSubmissionsPage() {
           return;
         }
 
-        // ✅ If API returned an error object (or anything non-array), don't crash
         if (!Array.isArray(json)) {
           console.error("API returned non-array:", json);
           setRows([]);
@@ -58,7 +56,6 @@ export default function LatestSubmissionsPage() {
           return;
         }
 
-        // ✅ Optional: basic shape-safety (prevents undefined fields crashing UI)
         const cleaned: Row[] = json.map((x: any) => ({
           submitted_at: String(x?.submitted_at ?? ""),
           discord_username: String(x?.discord_username ?? ""),
@@ -84,87 +81,173 @@ export default function LatestSubmissionsPage() {
   }, [rows]);
 
   return (
-    <main style={{ padding: 40 }}>
-      <h1 style={{ fontSize: 28, fontWeight: "bold" }}>Latest Submissions</h1>
+    <main style={styles.page}>
+      <div style={styles.container} className="frosted-glass-strong">
+        <h1 style={styles.title}>Latest Submissions</h1>
 
-      {error && (
-        <p style={{ marginTop: 12, color: "tomato" }}>
-          <b>Error:</b> {error}
-        </p>
-      )}
-
-      <p style={{ opacity: 0.8, marginTop: 8 }}>
-        Total rows loaded: <b>{rows.length}</b>
-      </p>
-
-      {sorted[0] && (
-        <p style={{ opacity: 0.7, marginTop: 8, fontSize: 12 }}>
-          Newest submission timestamp: <code>{sorted[0].submitted_at}</code>
-        </p>
-      )}
-
-      <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
-        {sorted.length === 0 ? (
-          <div style={{ opacity: 0.85 }}>No submissions found yet.</div>
-        ) : (
-          sorted.map((r, i) => (
-            <div
-              key={i}
-              style={{ border: "1px solid #333", borderRadius: 12, padding: 16 }}
-            >
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                <div>
-                  <b>ID:</b> {r.level_id}
-                </div>
-                <div>
-                  <b>User:</b> {r.discord_username}
-                </div>
-                <div>
-                  <b>Submitted:</b> {r.submitted_at}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  marginTop: 8,
-                  display: "flex",
-                  gap: 16,
-                  flexWrap: "wrap",
-                }}
-              >
-                <div>
-                  <b>Difficulty:</b> {r.difficulty || "—"}
-                </div>
-                <div>
-                  <b>Involved:</b> {r.involved_confirm || "—"}
-                </div>
-                <div>
-                  <b>Sent:</b> {r.sent || "No"}
-                </div>
-              </div>
-
-              {r.video_url && (
-                <div style={{ marginTop: 10 }}>
-                  <a
-                    href={r.video_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ textDecoration: "underline" }}
-                  >
-                    Video link
-                  </a>
-                </div>
-              )}
-            </div>
-          ))
+        {error && (
+          <p style={styles.error}>
+            <strong>Error:</strong> {error}
+          </p>
         )}
-      </div>
 
-      <div style={{ marginTop: 18, textAlign: "center" }}>
-        <a href="/" style={{ textDecoration: "underline", opacity: 0.85 }}>
-          ← Back
-        </a>
+        <p style={styles.stats}>
+          Total rows: <strong>{rows.length}</strong>
+        </p>
+
+        {sorted[0] && (
+          <p style={styles.debug}>
+            Newest submission: <code>{sorted[0].submitted_at}</code>
+          </p>
+        )}
+
+        <div style={styles.results}>
+          {sorted.length === 0 ? (
+            <div style={styles.emptyState} className="frosted-glass">
+              No submissions found yet.
+            </div>
+          ) : (
+            sorted.map((r, i) => (
+              <div key={i} style={styles.card} className="frosted-glass">
+                <div style={styles.cardHeader}>
+                  <div style={styles.cardItem}>
+                    <strong>ID:</strong> {r.level_id}
+                  </div>
+                  <div style={styles.cardItem}>
+                    <strong>User:</strong> {r.discord_username}
+                  </div>
+                  <div style={styles.cardItem}>
+                    <strong>Submitted:</strong> {r.submitted_at}
+                  </div>
+                </div>
+
+                <div style={styles.cardDetails}>
+                  <div style={styles.cardItem}>
+                    <strong>Difficulty:</strong> {r.difficulty || "—"}
+                  </div>
+                  <div style={styles.cardItem}>
+                    <strong>Involved:</strong> {r.involved_confirm || "—"}
+                  </div>
+                  <div style={styles.cardItem}>
+                    <strong>Sent:</strong> {r.sent || "No"}
+                  </div>
+                </div>
+
+                {r.video_url && (
+                  <div style={styles.videoLink}>
+                    <a
+                      href={r.video_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={styles.link}
+                    >
+                      View Video →
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        <div style={styles.backLink}>
+          <a href="/" style={styles.link}>← Back to Home</a>
+        </div>
       </div>
     </main>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  container: {
+    width: "min(900px, 100%)",
+    padding: "40px 32px",
+    borderRadius: 24,
+  },
+  title: {
+    fontSize: "clamp(28px, 4vw, 36px)",
+    fontWeight: 700,
+    margin: 0,
+    marginBottom: 24,
+    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  },
+  error: {
+    marginTop: 16,
+    padding: "12px 16px",
+    background: "rgba(255, 99, 71, 0.15)",
+    border: "1px solid rgba(255, 99, 71, 0.3)",
+    borderRadius: 12,
+    color: "tomato",
+    fontSize: 14,
+  },
+  stats: {
+    opacity: 0.8,
+    marginTop: 12,
+    fontSize: 14,
+    color: "var(--foreground)",
+  },
+  debug: {
+    opacity: 0.7,
+    marginTop: 8,
+    fontSize: 12,
+    color: "var(--foreground)",
+  },
+  results: {
+    marginTop: 28,
+    display: "grid",
+    gap: 16,
+  },
+  emptyState: {
+    padding: 32,
+    borderRadius: 16,
+    textAlign: "center",
+    color: "var(--foreground)",
+    opacity: 0.85,
+  },
+  card: {
+    borderRadius: 16,
+    padding: 20,
+    transition: "all 200ms ease",
+  },
+  cardHeader: {
+    display: "flex",
+    gap: 16,
+    flexWrap: "wrap",
+    marginBottom: 12,
+  },
+  cardDetails: {
+    display: "flex",
+    gap: 20,
+    flexWrap: "wrap",
+  },
+  cardItem: {
+    fontSize: 14,
+    color: "var(--foreground)",
+  },
+  videoLink: {
+    marginTop: 14,
+    paddingTop: 14,
+    borderTop: "1px solid var(--glass-border)",
+  },
+  link: {
+    color: "var(--accent)",
+    textDecoration: "none",
+    fontWeight: 600,
+    fontSize: 14,
+    transition: "opacity 200ms ease",
+  },
+  backLink: {
+    marginTop: 24,
+    textAlign: "center",
+  },
+};

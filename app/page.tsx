@@ -3,13 +3,13 @@ export default function Home() {
     <main style={styles.page}>
       {/* Top-left About button */}
       <div style={styles.topLeft}>
-        <a href="/about" style={styles.aboutBtn}>
+        <a href="/about" style={styles.aboutBtn} className="frosted-glass">
           About
         </a>
       </div>
 
-      {/* Center content */}
-      <div style={styles.centerWrap}>
+      {/* Center content with frosted glass */}
+      <div style={styles.centerWrap} className="frosted-glass-strong">
         <h1 style={styles.title}>Level Requests Database</h1>
         <p style={styles.subtitle}>phrostix and dkirinor</p>
 
@@ -36,8 +36,6 @@ export default function Home() {
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: "100vh",
-    background: "black",
-    color: "white",
     position: "relative",
     display: "flex",
     alignItems: "center",
@@ -51,55 +49,67 @@ const styles: Record<string, React.CSSProperties> = {
   },
   aboutBtn: {
     display: "inline-block",
-    padding: "14px 28px",
-    background: "white",
-    color: "black",
-    fontWeight: 700,
-    borderRadius: 10,
+    padding: "12px 24px",
+    color: "var(--foreground)",
+    fontWeight: 600,
+    borderRadius: 12,
     textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.15)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
-    transition: "transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease",
+    transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
   },
   centerWrap: {
-    width: "min(1100px, 100%)",
+    width: "min(600px, 90%)",
     textAlign: "center",
+    padding: "60px 48px",
+    borderRadius: 24,
+    animation: "fadeIn 0.6s ease-out",
   },
   title: {
-    fontSize: 52,
+    fontSize: "clamp(32px, 5vw, 56px)",
     fontWeight: 800,
     letterSpacing: "-0.02em",
     margin: 0,
-    lineHeight: 1.05,
+    lineHeight: 1.1,
+    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
   },
   subtitle: {
-    marginTop: 10,
-    marginBottom: 44,
-    opacity: 0.65,
-    fontSize: 16,
+    marginTop: 12,
+    marginBottom: 40,
+    opacity: 0.8,
+    fontSize: 18,
+    fontWeight: 500,
+    color: "var(--foreground)",
   },
   buttonRow: {
     display: "flex",
-    gap: 28,
+    flexDirection: "column",
+    gap: 16,
     justifyContent: "center",
-    flexWrap: "wrap",
+    alignItems: "center",
   },
   bigBtn: {
-    width: 280,
+    width: "100%",
+    maxWidth: 320,
     textAlign: "center",
-    padding: "18px 22px",
-    background: "white",
-    color: "black",
-    fontWeight: 700,
-    borderRadius: 12,
+    padding: "16px 32px",
+    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
+    color: "white",
+    fontWeight: 600,
+    fontSize: 16,
+    borderRadius: 14,
     textDecoration: "none",
-    border: "1px solid rgba(255,255,255,0.15)",
-    boxShadow: "0 14px 40px rgba(0,0,0,0.35)",
-    transition: "transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease",
+    border: "none",
+    boxShadow: "0 8px 24px rgba(59, 130, 246, 0.35)",
+    transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
   },
   footerText: {
-    marginTop: 34,
-    opacity: 0.75,
+    marginTop: 32,
+    opacity: 0.7,
     fontSize: 14,
+    color: "var(--foreground)",
   },
 };

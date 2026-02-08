@@ -1,32 +1,92 @@
 export default function AboutPage() {
   return (
-    <main style={{ padding: 40 }}>
-      <h1 style={{ fontSize: 28, fontWeight: "bold" }}>About</h1>
+    <main style={styles.page}>
+      <div style={styles.container} className="frosted-glass-strong">
+        <h1 style={styles.title}>About</h1>
 
-      <p style={{ marginTop: 12, opacity: 0.85, maxWidth: 800, lineHeight: 1.6 }}>
-        This website is a Geometry Dash request dashboard designed to make level submissions easier to browse,
-        search, and track. Requests are submitted through a Google Form and automatically stored in a Google
-        Spreadsheet, which this site pulls from.
-      </p>
+        <p style={styles.paragraph}>
+          This website is a Geometry Dash request dashboard designed to make level submissions easier to browse,
+          search, and track. Requests are submitted through a Google Form and automatically stored in a Google
+          Spreadsheet, which this site pulls from.
+        </p>
 
-      <h2 style={{ marginTop: 30, fontSize: 18, fontWeight: "bold" }}>How it works</h2>
-      <ul style={{ marginTop: 10, paddingLeft: 20, opacity: 0.85, lineHeight: 1.7 }}>
-        <li><b>Search</b> allows you to find submissions by Level ID or Username.</li>
-        <li><b>Latest Submissions</b> shows the newest requests.</li>
-        <li><b>Latest Sends</b> shows levels marked as sent in the spreadsheet.</li>
-      </ul>
+        <h2 style={styles.subtitle}>How it works</h2>
+        <ul style={styles.list}>
+          <li><strong>Search</strong> allows you to find submissions by Level ID or Username.</li>
+          <li><strong>Latest Submissions</strong> shows the newest requests.</li>
+          <li><strong>Latest Sends</strong> shows levels marked as sent in the spreadsheet.</li>
+        </ul>
 
-      <h2 style={{ marginTop: 30, fontSize: 18, fontWeight: "bold" }}>Disclaimer</h2>
-      <p style={{ marginTop: 10, opacity: 0.85, maxWidth: 800, lineHeight: 1.6 }}>
-        Submitting a request does not guarantee that the level will be sent or reviewed. This site is meant
-        to keep the request process organized and transparent.
-      </p>
+        <h2 style={styles.subtitle}>Disclaimer</h2>
+        <p style={styles.paragraph}>
+          Submitting a request does not guarantee that the level will be sent or reviewed. This site is meant
+          to keep the request process organized and transparent.
+        </p>
 
-      <div style={{ marginTop: 30, textAlign: "center" }}>
-        <a href="/" style={{ textDecoration: "underline", opacity: 0.85 }}>
-          ← Back
-        </a>
+        <div style={styles.backLink}>
+          <a href="/" style={styles.link}>
+            ← Back to Home
+          </a>
+        </div>
       </div>
     </main>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  container: {
+    width: "min(800px, 100%)",
+    padding: "48px 40px",
+    borderRadius: 24,
+  },
+  title: {
+    fontSize: "clamp(32px, 5vw, 42px)",
+    fontWeight: 700,
+    margin: 0,
+    marginBottom: 28,
+    background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+  },
+  paragraph: {
+    marginTop: 16,
+    opacity: 0.9,
+    maxWidth: 800,
+    lineHeight: 1.7,
+    fontSize: 16,
+    color: "var(--foreground)",
+  },
+  subtitle: {
+    marginTop: 32,
+    fontSize: 22,
+    fontWeight: 600,
+    color: "var(--foreground)",
+  },
+  list: {
+    marginTop: 14,
+    paddingLeft: 24,
+    opacity: 0.9,
+    lineHeight: 1.8,
+    fontSize: 15,
+    color: "var(--foreground)",
+  },
+  link: {
+    color: "var(--accent)",
+    textDecoration: "none",
+    fontWeight: 600,
+    fontSize: 15,
+    transition: "opacity 200ms ease",
+  },
+  backLink: {
+    marginTop: 40,
+    textAlign: "center",
+  },
+};
