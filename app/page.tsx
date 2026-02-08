@@ -30,9 +30,12 @@ export default function Home() {
       <main style={styles.page}>
         {/* Hero Section */}
         <div style={styles.centerWrap} className="frosted-glass-strong animate-float-slow">
-          <h1 style={styles.title} className="animate-fade-in">
-            Level Requests Database
-          </h1>
+          <img
+            src="/icon.png"
+            alt="Level Requests Database"
+            style={styles.logo}
+            className="animate-fade-in"
+          />
           <p style={styles.subtitle} className="animate-fade-in animate-pulse">
             phrostix and dkirinor
           </p>
@@ -159,6 +162,13 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "60px 48px",
     borderRadius: 24,
     marginTop: 40,
+  },
+  logo: {
+    width: "auto",
+    maxWidth: "280px",
+    height: "auto",
+    margin: "0 auto 20px auto",
+    display: "block",
   },
   title: {
     fontSize: "clamp(32px, 5vw, 56px)",
