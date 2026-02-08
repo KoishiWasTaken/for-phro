@@ -165,7 +165,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   logo: {
     width: "auto",
-    maxWidth: "280px",
+    maxWidth: "450px",
     height: "auto",
     margin: "0 auto 20px auto",
     display: "block",
