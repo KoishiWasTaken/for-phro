@@ -13,21 +13,23 @@ export default function TabNav() {
   ];
 
   return (
-    <nav style={styles.nav} className="frosted-glass">
+    <nav style={styles.nav} className="frosted-glass animate-slide-in-up">
       <div style={styles.container}>
-        <a href="/" style={styles.logo}>
+        <a href="/" style={styles.logo} className="logo-hover">
           <span style={styles.logoText}>Level Requests DB</span>
         </a>
         <div style={styles.tabs}>
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const isActive = pathname === tab.href;
             return (
               <a
                 key={tab.href}
                 href={tab.href}
+                className="tab-hover"
                 style={{
                   ...styles.tab,
                   ...(isActive ? styles.tabActive : {}),
+                  animationDelay: `${index * 0.1}s`,
                 }}
               >
                 {tab.name}
@@ -36,6 +38,22 @@ export default function TabNav() {
           })}
         </div>
       </div>
+      <style jsx>{`
+        .logo-hover {
+          transition: transform 300ms ease;
+        }
+        .logo-hover:hover {
+          transform: scale(1.05);
+        }
+        .tab-hover {
+          animation: fadeIn 0.4s ease-out backwards;
+        }
+        .tab-hover:hover {
+          transform: translateY(-2px);
+          background: var(--glass-bg);
+          opacity: 1 !important;
+        }
+      `}</style>
     </nav>
   );
 }

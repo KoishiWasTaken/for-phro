@@ -1,3 +1,5 @@
+"use client";
+
 import TabNav from "./components/TabNav";
 
 export default function Home() {
@@ -6,26 +8,35 @@ export default function Home() {
       <TabNav />
       <main style={styles.page}>
         <div style={styles.centerWrap} className="frosted-glass-strong">
-          <h1 style={styles.title}>Level Requests Database</h1>
-          <p style={styles.subtitle}>phrostix and dkirinor</p>
+          <h1 style={styles.title} className="animate-fade-in">Level Requests Database</h1>
+          <p style={styles.subtitle} className="animate-fade-in">phrostix and dkirinor</p>
 
           <div style={styles.buttonRow}>
-            <a href="/search" style={styles.bigBtn}>
+            <a href="/search" style={{...styles.bigBtn, animationDelay: "0.1s"}} className="big-btn animate-scale-in">
               Search
             </a>
-            <a href="/latest-sends" style={styles.bigBtn}>
+            <a href="/latest-sends" style={{...styles.bigBtn, animationDelay: "0.2s"}} className="big-btn animate-scale-in">
               Latest Sends
             </a>
-            <a href="/latest-submissions" style={styles.bigBtn}>
+            <a href="/latest-submissions" style={{...styles.bigBtn, animationDelay: "0.3s"}} className="big-btn animate-scale-in">
               Latest Submissions
             </a>
           </div>
 
-          <p style={styles.footerText}>
+          <p style={styles.footerText} className="animate-fade-in">
             Browse requests, search submissions, and view recent sends.
           </p>
         </div>
       </main>
+      <style jsx>{`
+        .big-btn:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+        }
+        .big-btn:active {
+          transform: translateY(-2px) scale(0.98);
+        }
+      `}</style>
     </>
   );
 }
@@ -63,6 +74,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 18,
     fontWeight: 500,
     color: "var(--foreground)",
+    animationDelay: "0.1s",
   },
   buttonRow: {
     display: "flex",
@@ -84,7 +96,7 @@ const styles: Record<string, React.CSSProperties> = {
     textDecoration: "none",
     border: "none",
     boxShadow: "0 8px 24px rgba(59, 130, 246, 0.35)",
-    transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
+    transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
     cursor: "pointer",
   },
   footerText: {
@@ -92,5 +104,6 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.7,
     fontSize: 14,
     color: "var(--foreground)",
+    animationDelay: "0.4s",
   },
 };

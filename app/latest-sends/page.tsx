@@ -79,7 +79,7 @@ export default function LatestSendsPage() {
                 </div>
               ) : (
                 sentOnly.map((r, i) => (
-                  <div key={i} style={styles.card} className="frosted-glass">
+                  <div key={i} style={{...styles.card, animationDelay: `${i * 0.05}s`}} className="frosted-glass result-card animate-slide-in-up">
                     <div style={styles.cardHeader}>
                       <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
                       <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
@@ -101,6 +101,15 @@ export default function LatestSendsPage() {
         )}
       </div>
     </main>
+      <style jsx>{`
+        .result-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 48px var(--shadow-color);
+        }
+        .result-card {
+          transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+      `}</style>
     </>
   );
 }

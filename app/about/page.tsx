@@ -1,3 +1,5 @@
+"use client";
+
 import TabNav from "../components/TabNav";
 
 export default function AboutPage() {
@@ -6,23 +8,23 @@ export default function AboutPage() {
       <TabNav />
       <main style={styles.page}>
       <div style={styles.container} className="frosted-glass-strong">
-        <h1 style={styles.title}>About</h1>
+        <h1 style={styles.title} className="animate-fade-in">About</h1>
 
-        <p style={styles.paragraph}>
+        <p style={{...styles.paragraph, animationDelay: "0.1s"}} className="animate-fade-in">
           This website is a Geometry Dash request dashboard designed to make level submissions easier to browse,
           search, and track. Requests are submitted through a Google Form and automatically stored in a Google
           Spreadsheet, which this site pulls from.
         </p>
 
-        <h2 style={styles.subtitle}>How it works</h2>
-        <ul style={styles.list}>
+        <h2 style={{...styles.subtitle, animationDelay: "0.2s"}} className="animate-slide-in-left">How it works</h2>
+        <ul style={{...styles.list, animationDelay: "0.3s"}} className="animate-fade-in">
           <li><strong>Search</strong> allows you to find submissions by Level ID or Username.</li>
           <li><strong>Latest Submissions</strong> shows the newest requests.</li>
           <li><strong>Latest Sends</strong> shows levels marked as sent in the spreadsheet.</li>
         </ul>
 
-        <h2 style={styles.subtitle}>Disclaimer</h2>
-        <p style={styles.paragraph}>
+        <h2 style={{...styles.subtitle, animationDelay: "0.4s"}} className="animate-slide-in-left">Disclaimer</h2>
+        <p style={{...styles.paragraph, animationDelay: "0.5s"}} className="animate-fade-in">
           Submitting a request does not guarantee that the level will be sent or reviewed. This site is meant
           to keep the request process organized and transparent.
         </p>
@@ -77,12 +79,5 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.8,
     fontSize: 15,
     color: "var(--foreground)",
-  },
-  link: {
-    color: "var(--accent)",
-    textDecoration: "none",
-    fontWeight: 600,
-    fontSize: 15,
-    transition: "opacity 200ms ease",
   },
 };
