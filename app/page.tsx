@@ -49,7 +49,7 @@ export default function Home() {
               Search
             </a>
             <a
-              href="#feedback"
+              href="https://forms.gle/pyFpxdayjkiN1N3N9"
               style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
               className="big-btn animate-scale-in animate-float"
               target="_blank"
