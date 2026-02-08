@@ -55,7 +55,7 @@ export default function LatestSubmissionsPage() {
         <h1 style={styles.title}>Latest Submissions</h1>
 
         {rows.length === 0 && !loading ? (
-          <div style={styles.notice} className="frosted-glass">
+          <div style={styles.notice} className="frosted-glass animate-pulse">
             <strong>Database not configured yet.</strong>
             <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
               To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
@@ -76,7 +76,7 @@ export default function LatestSubmissionsPage() {
 
             <div style={styles.results}>
               {sorted.length === 0 ? (
-                <div style={styles.emptyState} className="frosted-glass">
+                <div style={styles.emptyState} className="frosted-glass animate-pulse">
                   No submissions found yet.
                 </div>
               ) : (
