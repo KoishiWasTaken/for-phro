@@ -49,24 +49,15 @@ export default function Home() {
               Search
             </a>
             <a
-              href="https://forms.gle/pyFpxdayjkiN1N3N9"
-              style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
-              className="big-btn animate-scale-in"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Send Feedback
-            </a>
-            <a
               href="/latest-sends"
-              style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
+              style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
               className="big-btn animate-scale-in"
             >
               Latest Sends
             </a>
             <a
               href="/latest-submissions"
-              style={{ ...styles.bigBtn, animationDelay: "0.4s" }}
+              style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
               className="big-btn animate-scale-in"
             >
               Latest Submissions
@@ -76,6 +67,16 @@ export default function Home() {
           <p style={styles.footerText} className="animate-fade-in">
             Browse requests, search submissions, and view recent sends.
           </p>
+
+          <a
+            href="https://forms.gle/pyFpxdayjkiN1N3N9"
+            style={{ ...styles.feedbackBtn, animationDelay: "0.5s" }}
+            className="feedback-btn animate-scale-in"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Send Feedback
+          </a>
         </div>
 
         {/* About Section - Scrolls into view */}
@@ -126,6 +127,16 @@ export default function Home() {
           animation-play-state: paused;
         }
         .big-btn:active {
+          transform: translateY(-2px) scale(0.98);
+        }
+        .feedback-btn {
+          animation-delay: inherit;
+        }
+        .feedback-btn:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 12px 32px rgba(245, 158, 11, 0.5);
+        }
+        .feedback-btn:active {
           transform: translateY(-2px) scale(0.98);
         }
         .scroll-fade-in {
@@ -228,6 +239,25 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     color: "var(--foreground)",
     animationDelay: "0.4s",
+  },
+  feedbackBtn: {
+    marginTop: 24,
+    width: "100%",
+    maxWidth: 320,
+    textAlign: "center",
+    padding: "12px 28px",
+    background: "linear-gradient(135deg, #f59e0b 0%, #fb923c 100%)",
+    color: "white",
+    fontWeight: 600,
+    fontSize: 15,
+    borderRadius: 12,
+    textDecoration: "none",
+    border: "none",
+    boxShadow: "0 6px 20px rgba(245, 158, 11, 0.35)",
+    transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
+    display: "block",
+    margin: "24px auto 0 auto",
   },
   aboutSection: {
     width: "100%",

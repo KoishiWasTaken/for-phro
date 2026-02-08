@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import TabNav from "../components/TabNav";
+import Pagination from "../components/Pagination";
 
 type Row = {
   submitted_at: string;
@@ -19,30 +20,50 @@ export default function SearchPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [mode, setMode] = useState<SearchMode>("level_id");
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Reset to page 1 when search query or mode changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, mode]);
 
   useEffect(() => {
-    fetch("/api/requests")
+    const q = query.trim();
+    if (!q) {
+      setRows([]);
+      setHasSearched(false);
+      return;
+    }
+
+    setLoading(true);
+    setHasSearched(true);
+    const params = new URLSearchParams({
+      page: currentPage.toString(),
+      limit: "10",
+      search: q,
+      searchMode: mode,
+      sortBy: "latest",
+    });
+
+    fetch(`/api/requests?${params}`)
       .then((r) => r.json())
-      .then((d) => {
-        setRows(Array.isArray(d) ? d : []);
+      .then((response) => {
+        setRows(response.data || []);
+        setTotal(response.total || 0);
+        setTotalPages(response.totalPages || 0);
         setLoading(false);
       })
       .catch(() => {
         setRows([]);
+        setTotal(0);
+        setTotalPages(0);
         setLoading(false);
       });
-  }, []);
-
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-
-    return rows.filter((r) => {
-      const value = (r[mode] || "").toLowerCase();
-      return value.includes(q);
-    });
-  }, [rows, mode, query]);
+  }, [currentPage, mode, query]);
 
   return (
     <>
@@ -57,16 +78,6 @@ export default function SearchPage() {
             Be cautious when clicking on video links. Only click links you trust or that belong to you. External links may lead to unexpected or potentially harmful content.
           </p>
         </div>
-
-        {rows.length === 0 && !loading && (
-          <div style={styles.notice} className="frosted-glass animate-pulse">
-            <strong>Database not configured yet.</strong>
-            <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
-              To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
-              See <code>.env.example</code> for details.
-            </p>
-          </div>
-        )}
 
         <div style={styles.searchForm} className="animate-float-slow">
           <label style={styles.label}>
@@ -88,16 +99,25 @@ export default function SearchPage() {
             placeholder={mode === "level_id" ? "Type a Level ID..." : "Type a username..."}
             style={styles.input}
             className="frosted-glass"
-            disabled={rows.length === 0}
           />
         </div>
 
+        {loading && (
+          <div style={styles.loadingState}>Loading results...</div>
+        )}
+
+        {!loading && hasSearched && total > 0 && (
+          <p style={styles.stats}>
+            Found <strong>{total}</strong> {total === 1 ? "result" : "results"}
+          </p>
+        )}
+
         <div style={styles.results}>
-          {query.trim() && results.length === 0 && rows.length > 0 && (
+          {!loading && hasSearched && rows.length === 0 && (
             <div style={styles.noResults}>No matches found.</div>
           )}
 
-          {results.map((r, i) => (
+          {rows.map((r, i) => (
             <div key={i} style={{...styles.card, animationDelay: `${i * 0.05}s`}} className="frosted-glass result-card animate-slide-in-up">
               <div style={styles.cardHeader}>
                 <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
@@ -121,6 +141,14 @@ export default function SearchPage() {
             </div>
           ))}
         </div>
+
+        {!loading && hasSearched && totalPages > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </main>
       <style jsx>{`
@@ -169,12 +197,20 @@ const styles: Record<string, React.CSSProperties> = {
     color: "var(--foreground)",
     borderLeft: "4px solid #f59e0b",
   },
-  notice: {
-    padding: "20px 24px",
-    borderRadius: 14,
-    marginBottom: 24,
+  loadingState: {
     textAlign: "center",
+    padding: 32,
+    opacity: 0.7,
+    fontSize: 16,
     color: "var(--foreground)",
+  },
+  stats: {
+    opacity: 0.8,
+    marginTop: 12,
+    marginBottom: 16,
+    fontSize: 14,
+    color: "var(--foreground)",
+    textAlign: "center",
   },
   searchForm: {
     display: "flex",
