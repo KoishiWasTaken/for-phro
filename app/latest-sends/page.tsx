@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import TabNav from "../components/TabNav";
+import Pagination from "../components/Pagination";
 
 type Row = {
   submitted_at: string;
@@ -13,37 +14,50 @@ type Row = {
   sent: string;
 };
 
-function normalizeDate(s: string) {
-  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}:\d{2}:\d{2})$/);
-  if (!m) return 0;
-  const [_, mm, dd, yyyy, time] = m;
-  const iso = `${yyyy}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}T${time}`;
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? 0 : d.getTime();
-}
-
 export default function LatestSendsPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [allTotal, setAllTotal] = useState(0);
 
   useEffect(() => {
-    fetch("/api/requests", { cache: "no-store" })
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: currentPage.toString(),
+      limit: "10",
+      filterSent: "true",
+      sortBy: "latest",
+    });
+
+    fetch(`/api/requests?${params}`, { cache: "no-store" })
       .then((r) => r.json())
-      .then((d) => {
-        setRows(Array.isArray(d) ? d : []);
+      .then((response) => {
+        setRows(response.data || []);
+        setTotal(response.total || 0);
+        setTotalPages(response.totalPages || 0);
         setLoading(false);
       })
       .catch(() => {
         setRows([]);
+        setTotal(0);
+        setTotalPages(0);
         setLoading(false);
       });
-  }, []);
+  }, [currentPage]);
 
-  const sentOnly = useMemo(() => {
-    return rows
-      .filter((r) => (r.sent || "").trim().toLowerCase() === "yes")
-      .sort((a, b) => normalizeDate(b.submitted_at) - normalizeDate(a.submitted_at));
-  }, [rows]);
+  // Fetch total count of all submissions (for stats display)
+  useEffect(() => {
+    fetch("/api/requests?limit=0")
+      .then((r) => r.json())
+      .then((response) => {
+        setAllTotal(response.total || 0);
+      })
+      .catch(() => {
+        setAllTotal(0);
+      });
+  }, []);
 
   return (
     <>
@@ -52,51 +66,47 @@ export default function LatestSendsPage() {
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Latest Sends</h1>
 
-        {rows.length === 0 && !loading ? (
-          <div style={styles.notice} className="frosted-glass animate-pulse">
-            <strong>Database not configured yet.</strong>
-            <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
-              To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
-              See <code>.env.example</code> for details.
-            </p>
+        {loading && (
+          <div style={styles.loadingState}>Loading sent levels...</div>
+        )}
+
+        {!loading && total === 0 && (
+          <div style={styles.emptyState} className="frosted-glass animate-pulse">
+            Nothing marked as sent yet. In your sheet, type <strong>Yes</strong> in the <strong>sent</strong> column for a row, then refresh.
           </div>
-        ) : (
+        )}
+
+        {!loading && total > 0 && (
           <>
             <p style={styles.stats}>
-              Total rows: <strong>{rows.length}</strong> | Sent rows: <strong>{sentOnly.length}</strong>
+              Total submissions: <strong>{allTotal}</strong> | Sent: <strong>{total}</strong>
             </p>
 
             <div style={styles.results}>
-              {sentOnly.length === 0 ? (
-                <div style={styles.emptyState} className="frosted-glass animate-pulse">
-                  {rows.length > 0 ? (
-                    <>
-                      Nothing marked as sent yet. In your sheet, type <strong>Yes</strong> in the <strong>sent</strong> column for a row, then refresh.
-                    </>
-                  ) : (
-                    "No data available."
+              {rows.map((r, i) => (
+                <div key={i} style={{...styles.card, animationDelay: `${i * 0.05}s`}} className="frosted-glass result-card animate-slide-in-up">
+                  <div style={styles.cardHeader}>
+                    <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
+                    <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
+                    <div style={styles.cardItem}><strong>Submitted:</strong> {r.submitted_at}</div>
+                  </div>
+
+                  {r.video_url && (
+                    <div style={styles.videoLink}>
+                      <a href={r.video_url} target="_blank" rel="noreferrer" style={styles.link}>
+                        View Video →
+                      </a>
+                    </div>
                   )}
                 </div>
-              ) : (
-                sentOnly.map((r, i) => (
-                  <div key={i} style={{...styles.card, animationDelay: `${i * 0.05}s`}} className="frosted-glass result-card animate-slide-in-up">
-                    <div style={styles.cardHeader}>
-                      <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
-                      <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
-                      <div style={styles.cardItem}><strong>Submitted:</strong> {r.submitted_at}</div>
-                    </div>
-
-                    {r.video_url && (
-                      <div style={styles.videoLink}>
-                        <a href={r.video_url} target="_blank" rel="noreferrer" style={styles.link}>
-                          View Video →
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
+              ))}
             </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </>
         )}
       </div>
@@ -145,8 +155,16 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: "center",
     color: "var(--foreground)",
   },
+  loadingState: {
+    textAlign: "center",
+    padding: 32,
+    opacity: 0.7,
+    fontSize: 16,
+    color: "var(--foreground)",
+  },
   stats: {
     opacity: 0.8,
+    textAlign: "center",
     marginTop: 12,
     fontSize: 14,
     color: "var(--foreground)",

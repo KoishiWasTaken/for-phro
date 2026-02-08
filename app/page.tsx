@@ -30,9 +30,12 @@ export default function Home() {
       <main style={styles.page}>
         {/* Hero Section */}
         <div style={styles.centerWrap} className="frosted-glass-strong animate-float-slow">
-          <h1 style={styles.title} className="animate-fade-in">
-            Level Requests Database
-          </h1>
+          <img
+            src="/icon.png"
+            alt="Level Requests Database"
+            style={styles.logo}
+            className="animate-fade-in"
+          />
           <p style={styles.subtitle} className="animate-fade-in animate-pulse">
             phrostix and dkirinor
           </p>
@@ -41,21 +44,21 @@ export default function Home() {
             <a
               href="/search"
               style={{ ...styles.bigBtn, animationDelay: "0.1s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Search
             </a>
             <a
               href="/latest-sends"
               style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Latest Sends
             </a>
             <a
               href="/latest-submissions"
               style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Latest Submissions
             </a>
@@ -64,11 +67,21 @@ export default function Home() {
           <p style={styles.footerText} className="animate-fade-in">
             Browse requests, search submissions, and view recent sends.
           </p>
+
+          <a
+            href="https://forms.gle/pyFpxdayjkiN1N3N9"
+            style={{ ...styles.feedbackBtn, animationDelay: "0.5s" }}
+            className="feedback-btn animate-scale-in"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Send Feedback
+          </a>
         </div>
 
         {/* About Section - Scrolls into view */}
         <div ref={aboutRef} style={styles.aboutSection}>
-          <div style={styles.aboutContainer} className="frosted-glass-strong scroll-fade-in">
+          <div style={styles.aboutContainer} className="frosted-glass-no-anim scroll-fade-in">
             <h2 style={styles.aboutTitle} className="scroll-fade-in">
               About This Database
             </h2>
@@ -116,6 +129,16 @@ export default function Home() {
         .big-btn:active {
           transform: translateY(-2px) scale(0.98);
         }
+        .feedback-btn {
+          animation-delay: inherit;
+        }
+        .feedback-btn:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 12px 32px rgba(245, 158, 11, 0.5);
+        }
+        .feedback-btn:active {
+          transform: translateY(-2px) scale(0.98);
+        }
         .scroll-fade-in {
           transition-delay: calc(var(--delay, 0) * 0.1s);
         }
@@ -159,6 +182,13 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "60px 48px",
     borderRadius: 24,
     marginTop: 40,
+  },
+  logo: {
+    width: "auto",
+    maxWidth: "450px",
+    height: "auto",
+    margin: "0 auto 20px auto",
+    display: "block",
   },
   title: {
     fontSize: "clamp(32px, 5vw, 56px)",
@@ -209,6 +239,25 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     color: "var(--foreground)",
     animationDelay: "0.4s",
+  },
+  feedbackBtn: {
+    marginTop: 24,
+    width: "100%",
+    maxWidth: 320,
+    textAlign: "center",
+    padding: "12px 28px",
+    background: "linear-gradient(135deg, #f59e0b 0%, #fb923c 100%)",
+    color: "white",
+    fontWeight: 600,
+    fontSize: 15,
+    borderRadius: 12,
+    textDecoration: "none",
+    border: "none",
+    boxShadow: "0 6px 20px rgba(245, 158, 11, 0.35)",
+    transition: "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
+    display: "block",
+    margin: "24px auto 0 auto",
   },
   aboutSection: {
     width: "100%",
