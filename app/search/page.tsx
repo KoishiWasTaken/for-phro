@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import TabNav from "../components/TabNav";
 
 type Row = {
   submitted_at: string;
@@ -44,7 +45,9 @@ export default function SearchPage() {
   }, [rows, mode, query]);
 
   return (
-    <main style={styles.page}>
+    <>
+      <TabNav />
+      <main style={styles.page}>
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Search Database</h1>
 
@@ -111,18 +114,16 @@ export default function SearchPage() {
             </div>
           ))}
         </div>
-
-        <div style={styles.backLink}>
-          <a href="/" style={styles.link}>← Back to Home</a>
-        </div>
       </div>
     </main>
+    </>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: "100vh",
+    paddingTop: 100,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -229,9 +230,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     fontSize: 14,
     transition: "opacity 200ms ease",
-  },
-  backLink: {
-    marginTop: 24,
-    textAlign: "center",
   },
 };

@@ -1,6 +1,10 @@
+import TabNav from "../components/TabNav";
+
 export default function AboutPage() {
   return (
-    <main style={styles.page}>
+    <>
+      <TabNav />
+      <main style={styles.page}>
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>About</h1>
 
@@ -22,20 +26,16 @@ export default function AboutPage() {
           Submitting a request does not guarantee that the level will be sent or reviewed. This site is meant
           to keep the request process organized and transparent.
         </p>
-
-        <div style={styles.backLink}>
-          <a href="/" style={styles.link}>
-            ← Back to Home
-          </a>
-        </div>
       </div>
     </main>
+    </>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: "100vh",
+    paddingTop: 100,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -84,9 +84,5 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     fontSize: 15,
     transition: "opacity 200ms ease",
-  },
-  backLink: {
-    marginTop: 40,
-    textAlign: "center",
   },
 };
