@@ -44,14 +44,14 @@ export default function Home() {
             <a
               href="/search"
               style={{ ...styles.bigBtn, animationDelay: "0.1s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Search
             </a>
             <a
               href="https://forms.gle/pyFpxdayjkiN1N3N9"
               style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
               target="_blank"
               rel="noreferrer"
             >
@@ -60,14 +60,14 @@ export default function Home() {
             <a
               href="/latest-sends"
               style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Latest Sends
             </a>
             <a
               href="/latest-submissions"
               style={{ ...styles.bigBtn, animationDelay: "0.4s" }}
-              className="big-btn animate-scale-in animate-float"
+              className="big-btn animate-scale-in"
             >
               Latest Submissions
             </a>
