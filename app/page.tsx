@@ -49,15 +49,24 @@ export default function Home() {
               Search
             </a>
             <a
-              href="/latest-sends"
+              href="#feedback"
               style={{ ...styles.bigBtn, animationDelay: "0.2s" }}
+              className="big-btn animate-scale-in animate-float"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Send Feedback
+            </a>
+            <a
+              href="/latest-sends"
+              style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
               className="big-btn animate-scale-in animate-float"
             >
               Latest Sends
             </a>
             <a
               href="/latest-submissions"
-              style={{ ...styles.bigBtn, animationDelay: "0.3s" }}
+              style={{ ...styles.bigBtn, animationDelay: "0.4s" }}
               className="big-btn animate-scale-in animate-float"
             >
               Latest Submissions
