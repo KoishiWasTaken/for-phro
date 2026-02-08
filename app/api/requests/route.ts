@@ -8,9 +8,8 @@ export async function GET() {
     const rows = await getRows();
     return NextResponse.json(rows);
   } catch (e: any) {
-    return NextResponse.json(
-      { error: String(e?.message ?? e) },
-      { status: 500 }
-    );
+    console.error("Error in /api/requests:", e);
+    // Return empty array instead of error to prevent UI crashes
+    return NextResponse.json([]);
   }
 }

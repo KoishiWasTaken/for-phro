@@ -25,53 +25,19 @@ function normalizeDate(s: string) {
 
 export default function LatestSubmissionsPage() {
   const [rows, setRows] = useState<Row[]>([]);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      try {
-        setError("");
-
-        const r = await fetch("/api/requests", { cache: "no-store" });
-        const text = await r.text();
-
-        let json: any;
-        try {
-          json = JSON.parse(text);
-        } catch {
-          setRows([]);
-          setError(
-            `API did not return JSON. Status: ${r.status}. First 120 chars: ${text.slice(
-              0,
-              120
-            )}`
-          );
-          return;
-        }
-
-        if (!Array.isArray(json)) {
-          console.error("API returned non-array:", json);
-          setRows([]);
-          setError(json?.error ?? "API did not return an array");
-          return;
-        }
-
-        const cleaned: Row[] = json.map((x: any) => ({
-          submitted_at: String(x?.submitted_at ?? ""),
-          discord_username: String(x?.discord_username ?? ""),
-          level_id: String(x?.level_id ?? ""),
-          difficulty: String(x?.difficulty ?? ""),
-          video_url: String(x?.video_url ?? ""),
-          involved_confirm: String(x?.involved_confirm ?? ""),
-          sent: String(x?.sent ?? ""),
-        }));
-
-        setRows(cleaned);
-      } catch (e: any) {
+    fetch("/api/requests", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        setRows(Array.isArray(d) ? d : []);
+        setLoading(false);
+      })
+      .catch(() => {
         setRows([]);
-        setError(String(e?.message ?? e));
-      }
-    })();
+        setLoading(false);
+      });
   }, []);
 
   const sorted = useMemo(() => {
@@ -85,70 +51,76 @@ export default function LatestSubmissionsPage() {
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Latest Submissions</h1>
 
-        {error && (
-          <p style={styles.error}>
-            <strong>Error:</strong> {error}
-          </p>
-        )}
+        {rows.length === 0 && !loading ? (
+          <div style={styles.notice} className="frosted-glass">
+            <strong>Database not configured yet.</strong>
+            <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
+              To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
+              See <code>.env.example</code> for details.
+            </p>
+          </div>
+        ) : (
+          <>
+            <p style={styles.stats}>
+              Total rows: <strong>{rows.length}</strong>
+            </p>
 
-        <p style={styles.stats}>
-          Total rows: <strong>{rows.length}</strong>
-        </p>
+            {sorted[0] && (
+              <p style={styles.debug}>
+                Newest submission: <code>{sorted[0].submitted_at}</code>
+              </p>
+            )}
 
-        {sorted[0] && (
-          <p style={styles.debug}>
-            Newest submission: <code>{sorted[0].submitted_at}</code>
-          </p>
-        )}
+            <div style={styles.results}>
+              {sorted.length === 0 ? (
+                <div style={styles.emptyState} className="frosted-glass">
+                  No submissions found yet.
+                </div>
+              ) : (
+                sorted.map((r, i) => (
+                  <div key={i} style={styles.card} className="frosted-glass">
+                    <div style={styles.cardHeader}>
+                      <div style={styles.cardItem}>
+                        <strong>ID:</strong> {r.level_id}
+                      </div>
+                      <div style={styles.cardItem}>
+                        <strong>User:</strong> {r.discord_username}
+                      </div>
+                      <div style={styles.cardItem}>
+                        <strong>Submitted:</strong> {r.submitted_at}
+                      </div>
+                    </div>
 
-        <div style={styles.results}>
-          {sorted.length === 0 ? (
-            <div style={styles.emptyState} className="frosted-glass">
-              No submissions found yet.
+                    <div style={styles.cardDetails}>
+                      <div style={styles.cardItem}>
+                        <strong>Difficulty:</strong> {r.difficulty || "—"}
+                      </div>
+                      <div style={styles.cardItem}>
+                        <strong>Involved:</strong> {r.involved_confirm || "—"}
+                      </div>
+                      <div style={styles.cardItem}>
+                        <strong>Sent:</strong> {r.sent || "No"}
+                      </div>
+                    </div>
+
+                    {r.video_url && (
+                      <div style={styles.videoLink}>
+                        <a
+                          href={r.video_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={styles.link}
+                        >
+                          View Video →
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
-          ) : (
-            sorted.map((r, i) => (
-              <div key={i} style={styles.card} className="frosted-glass">
-                <div style={styles.cardHeader}>
-                  <div style={styles.cardItem}>
-                    <strong>ID:</strong> {r.level_id}
-                  </div>
-                  <div style={styles.cardItem}>
-                    <strong>User:</strong> {r.discord_username}
-                  </div>
-                  <div style={styles.cardItem}>
-                    <strong>Submitted:</strong> {r.submitted_at}
-                  </div>
-                </div>
-
-                <div style={styles.cardDetails}>
-                  <div style={styles.cardItem}>
-                    <strong>Difficulty:</strong> {r.difficulty || "—"}
-                  </div>
-                  <div style={styles.cardItem}>
-                    <strong>Involved:</strong> {r.involved_confirm || "—"}
-                  </div>
-                  <div style={styles.cardItem}>
-                    <strong>Sent:</strong> {r.sent || "No"}
-                  </div>
-                </div>
-
-                {r.video_url && (
-                  <div style={styles.videoLink}>
-                    <a
-                      href={r.video_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={styles.link}
-                    >
-                      View Video →
-                    </a>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
+          </>
+        )}
 
         <div style={styles.backLink}>
           <a href="/" style={styles.link}>← Back to Home</a>
@@ -181,14 +153,12 @@ const styles: Record<string, React.CSSProperties> = {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
-  error: {
-    marginTop: 16,
-    padding: "12px 16px",
-    background: "rgba(255, 99, 71, 0.15)",
-    border: "1px solid rgba(255, 99, 71, 0.3)",
-    borderRadius: 12,
-    color: "tomato",
-    fontSize: 14,
+  notice: {
+    padding: "20px 24px",
+    borderRadius: 14,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "var(--foreground)",
   },
   stats: {
     opacity: 0.8,

@@ -23,20 +23,19 @@ function normalizeDate(s: string) {
 
 export default function LatestSendsPage() {
   const [rows, setRows] = useState<Row[]>([]);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/requests", { cache: "no-store" })
-      .then(async (r) => {
-        const text = await r.text();
-        try {
-          const json = JSON.parse(text);
-          setRows(json);
-        } catch {
-          setError(`API did not return JSON. First 120 chars: ${text.slice(0, 120)}`);
-        }
+      .then((r) => r.json())
+      .then((d) => {
+        setRows(Array.isArray(d) ? d : []);
+        setLoading(false);
       })
-      .catch((e) => setError(String(e?.message ?? e)));
+      .catch(() => {
+        setRows([]);
+        setLoading(false);
+      });
   }, []);
 
   const sentOnly = useMemo(() => {
@@ -50,48 +49,53 @@ export default function LatestSendsPage() {
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Latest Sends</h1>
 
-        {error && (
-          <p style={styles.error}>
-            <strong>Error:</strong> {error}
-          </p>
-        )}
+        {rows.length === 0 && !loading ? (
+          <div style={styles.notice} className="frosted-glass">
+            <strong>Database not configured yet.</strong>
+            <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
+              To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
+              See <code>.env.example</code> for details.
+            </p>
+          </div>
+        ) : (
+          <>
+            <p style={styles.stats}>
+              Total rows: <strong>{rows.length}</strong> | Sent rows: <strong>{sentOnly.length}</strong>
+            </p>
 
-        <p style={styles.stats}>
-          Total rows: <strong>{rows.length}</strong> | Sent rows: <strong>{sentOnly.length}</strong>
-        </p>
-
-        {rows[0] && (
-          <p style={styles.debug}>
-            First row sent value: <code>{String(rows[0].sent ?? "")}</code>
-          </p>
-        )}
-
-        <div style={styles.results}>
-          {sentOnly.length === 0 ? (
-            <div style={styles.emptyState} className="frosted-glass">
-              Nothing marked as sent yet. In your sheet, type <strong>Yes</strong> in the <strong>sent</strong> column for a row
-              (in <strong>PUBLIC_VIEW</strong>), then refresh.
-            </div>
-          ) : (
-            sentOnly.map((r, i) => (
-              <div key={i} style={styles.card} className="frosted-glass">
-                <div style={styles.cardHeader}>
-                  <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
-                  <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
-                  <div style={styles.cardItem}><strong>Submitted:</strong> {r.submitted_at}</div>
+            <div style={styles.results}>
+              {sentOnly.length === 0 ? (
+                <div style={styles.emptyState} className="frosted-glass">
+                  {rows.length > 0 ? (
+                    <>
+                      Nothing marked as sent yet. In your sheet, type <strong>Yes</strong> in the <strong>sent</strong> column for a row, then refresh.
+                    </>
+                  ) : (
+                    "No data available."
+                  )}
                 </div>
+              ) : (
+                sentOnly.map((r, i) => (
+                  <div key={i} style={styles.card} className="frosted-glass">
+                    <div style={styles.cardHeader}>
+                      <div style={styles.cardItem}><strong>ID:</strong> {r.level_id}</div>
+                      <div style={styles.cardItem}><strong>User:</strong> {r.discord_username}</div>
+                      <div style={styles.cardItem}><strong>Submitted:</strong> {r.submitted_at}</div>
+                    </div>
 
-                {r.video_url && (
-                  <div style={styles.videoLink}>
-                    <a href={r.video_url} target="_blank" rel="noreferrer" style={styles.link}>
-                      View Video →
-                    </a>
+                    {r.video_url && (
+                      <div style={styles.videoLink}>
+                        <a href={r.video_url} target="_blank" rel="noreferrer" style={styles.link}>
+                          View Video →
+                        </a>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ))
-          )}
-        </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
 
         <div style={styles.backLink}>
           <a href="/" style={styles.link}>← Back to Home</a>
@@ -124,25 +128,17 @@ const styles: Record<string, React.CSSProperties> = {
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
-  error: {
-    marginTop: 16,
-    padding: "12px 16px",
-    background: "rgba(255, 99, 71, 0.15)",
-    border: "1px solid rgba(255, 99, 71, 0.3)",
-    borderRadius: 12,
-    color: "tomato",
-    fontSize: 14,
+  notice: {
+    padding: "20px 24px",
+    borderRadius: 14,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "var(--foreground)",
   },
   stats: {
     opacity: 0.8,
     marginTop: 12,
     fontSize: 14,
-    color: "var(--foreground)",
-  },
-  debug: {
-    opacity: 0.7,
-    marginTop: 8,
-    fontSize: 12,
     color: "var(--foreground)",
   },
   results: {

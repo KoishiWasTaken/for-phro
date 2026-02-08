@@ -18,11 +18,19 @@ export default function SearchPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [mode, setMode] = useState<SearchMode>("level_id");
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/requests")
       .then((r) => r.json())
-      .then((d) => setRows(d));
+      .then((d) => {
+        setRows(Array.isArray(d) ? d : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRows([]);
+        setLoading(false);
+      });
   }, []);
 
   const results = useMemo(() => {
@@ -39,6 +47,16 @@ export default function SearchPage() {
     <main style={styles.page}>
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Search Database</h1>
+
+        {rows.length === 0 && !loading && (
+          <div style={styles.notice} className="frosted-glass">
+            <strong>Database not configured yet.</strong>
+            <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.8 }}>
+              To set up the database, add your Google Sheets CSV URL to the <code>PUBLIC_SHEET_CSV_URL</code> environment variable.
+              See <code>.env.example</code> for details.
+            </p>
+          </div>
+        )}
 
         <div style={styles.searchForm}>
           <label style={styles.label}>
@@ -60,11 +78,12 @@ export default function SearchPage() {
             placeholder={mode === "level_id" ? "Type a Level ID..." : "Type a username..."}
             style={styles.input}
             className="frosted-glass"
+            disabled={rows.length === 0}
           />
         </div>
 
         <div style={styles.results}>
-          {query.trim() && results.length === 0 && (
+          {query.trim() && results.length === 0 && rows.length > 0 && (
             <div style={styles.noResults}>No matches found.</div>
           )}
 
@@ -124,6 +143,13 @@ const styles: Record<string, React.CSSProperties> = {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
+  },
+  notice: {
+    padding: "20px 24px",
+    borderRadius: 14,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "var(--foreground)",
   },
   searchForm: {
     display: "flex",

@@ -60,34 +60,40 @@ function parseCSV(csvText: string): Row[] {
 
 export async function getRows(): Promise<Row[]> {
   const url = process.env.PUBLIC_SHEET_CSV_URL;
-  if (!url) {
-    throw new Error("Missing PUBLIC_SHEET_CSV_URL (check .env.local and Vercel env vars).");
+
+  // Return empty array if no URL is configured (graceful fallback)
+  if (!url || url === "your_google_sheets_csv_url_here") {
+    console.warn("PUBLIC_SHEET_CSV_URL not configured. Returning empty data.");
+    return [];
   }
 
-  const res = await fetch(url, {
-    cache: "no-store",
-    headers: {
-      Accept: "text/csv,text/plain,*/*",
-      "User-Agent": "Mozilla/5.0",
-    },
-  });
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: {
+        Accept: "text/csv,text/plain,*/*",
+        "User-Agent": "Mozilla/5.0",
+      },
+    });
 
-  const text = await res.text();
+    const text = await res.text();
 
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch CSV: ${res.status}. First 120 chars: ${text.slice(0, 120)}`
-    );
+    if (!res.ok) {
+      console.error(`Failed to fetch CSV: ${res.status}`);
+      return [];
+    }
+
+    const trimmed = text.trim();
+
+    // If Google returns an HTML page, return empty array
+    if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
+      console.error("Google returned HTML instead of CSV");
+      return [];
+    }
+
+    return parseCSV(text);
+  } catch (error) {
+    console.error("Error fetching CSV data:", error);
+    return [];
   }
-
-  const trimmed = text.trim();
-
-  // If Google returns an HTML page, catch it immediately
-  if (trimmed.startsWith("<!DOCTYPE") || trimmed.startsWith("<html")) {
-    throw new Error(
-      `Google returned HTML instead of CSV. First 120 chars: ${trimmed.slice(0, 120)}`
-    );
-  }
-
-  return parseCSV(text);
 }

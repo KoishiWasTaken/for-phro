@@ -1,24 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Level Requests Database
 
-## Getting Started
+A modern, beautiful Geometry Dash level request dashboard with frosted glass UI effects. Browse, search, and track level submissions stored in Google Sheets.
 
-First, run the development server:
+## Features
+
+- **Search**: Find submissions by Level ID or Username
+- **Latest Submissions**: View all submissions sorted by date
+- **Latest Sends**: See levels marked as sent
+- **Modern UI**: Frosted glass effects with gradient backgrounds
+- **Responsive**: Works on all device sizes
+
+## Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` and add your Google Sheets CSV URL:
+
+```env
+PUBLIC_SHEET_CSV_URL=https://docs.google.com/spreadsheets/d/e/YOUR_SHEET_ID/pub?output=csv
+```
+
+**How to get your Google Sheets CSV URL:**
+
+1. Open your Google Sheet
+2. Go to **File** → **Share** → **Publish to web**
+3. Choose **Comma-separated values (.csv)** from the dropdown
+4. Click **Publish**
+5. Copy the generated URL and paste it in `.env.local`
+
+### 3. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `app/` - Next.js app directory with pages and API routes
+- `lib/requests.ts` - CSV parsing and data fetching logic
+- `app/globals.css` - Global styles with frosted glass utilities
 
 ## Learn More
 
@@ -26,8 +60,6 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
 
