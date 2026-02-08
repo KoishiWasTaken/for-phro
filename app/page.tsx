@@ -71,7 +71,7 @@ export default function Home() {
 
         {/* About Section - Scrolls into view */}
         <div ref={aboutRef} style={styles.aboutSection}>
-          <div style={styles.aboutContainer} className="frosted-glass-strong scroll-fade-in">
+          <div style={styles.aboutContainer} className="frosted-glass-no-anim scroll-fade-in">
             <h2 style={styles.aboutTitle} className="scroll-fade-in">
               About This Database
             </h2>
