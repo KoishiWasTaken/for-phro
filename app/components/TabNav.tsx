@@ -6,6 +6,7 @@ export default function TabNav() {
   const pathname = usePathname();
 
   const tabs = [
+    { name: "Home", href: "/" },
     { name: "Search", href: "/search" },
     { name: "Latest Sends", href: "/latest-sends" },
     { name: "Latest Submissions", href: "/latest-submissions" },
