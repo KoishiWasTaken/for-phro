@@ -51,6 +51,13 @@ export default function SearchPage() {
       <div style={styles.container} className="frosted-glass-strong">
         <h1 style={styles.title}>Search Database</h1>
 
+        <div style={styles.disclaimer} className="frosted-glass animate-fade-in">
+          <strong>⚠️ Safety Notice</strong>
+          <p style={{ margin: "8px 0 0 0", fontSize: 14, opacity: 0.85 }}>
+            Be cautious when clicking on video links. Only click links you trust or that belong to you. External links may lead to unexpected or potentially harmful content.
+          </p>
+        </div>
+
         {rows.length === 0 && !loading && (
           <div style={styles.notice} className="frosted-glass animate-pulse">
             <strong>Database not configured yet.</strong>
@@ -148,11 +155,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     textAlign: "center",
     margin: 0,
-    marginBottom: 32,
+    marginBottom: 24,
     background: "linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
+  },
+  disclaimer: {
+    padding: "16px 20px",
+    borderRadius: 12,
+    marginBottom: 24,
+    textAlign: "center",
+    color: "var(--foreground)",
+    borderLeft: "4px solid #f59e0b",
   },
   notice: {
     padding: "20px 24px",
